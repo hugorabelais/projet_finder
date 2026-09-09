@@ -32,13 +32,22 @@ app.get("/chambres/:id", (req, res) => {
 });
 
 app.get("/hotels", (req, res) => res.json(hotels));
-app.get("/chambres", (req, res) => res.json(chambres));
 
 app.get("/hotels/:id", (req, res) => {
   const id = Number(req.params.id);
   const hotel = hotels.find((hotels) => hotels.id === id);
   if (!hotel) return res.status(404).json({ erreur: "hotel introuvable" });
   res.json(hotel);
+});
+
+app.get("/chambres", (req, res) => {
+  const prix_max = Number(req.query.prix_max);
+  const chambre = chambres.filter((l) => l.prix_nuit <= prix_max);
+  if (isNaN(prix_max)) {
+    res.json(chambres);
+  }
+  if (!chambre) return res.status(404).json({ erreur: "chambre introuvable" });
+  res.json(chambre);
 });
 
 app.listen(PORT, () => console.log(`API sur http://localhost:${PORT}`));
