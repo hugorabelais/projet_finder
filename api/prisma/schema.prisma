@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Utilisateur {
+  utilisateur_id   Int      @id @default(autoincrement())
+  role             String
+  email            String   @unique
+  mot_de_passe     String
+  nom              String
+  prenom           String
+  telephone        String?
+  date_inscription DateTime @default(now())
+  hotel_id         Int?
+
+  hotel        Hotel?         @relation(fields: [hotel_id], references: [hotel_id])
+  reservations Reservation[]
+}
+
+model Hotel {
+  hotel_id    Int    @id @default(autoincrement())
+  nom         String
+  etoiles     Int
+  adresse     String
+  code_postal String
+  ville       String
+  telephone   String
+  email       String @unique
+  gerant      String
+  description String
+
+  hoteliers Utilisateur[]
+  chambres  Chambre[]
+}
+
+model Chambre {
+  chambre_id  Int     @id @default(autoincrement())
+  hotel_id    Int
+  numero      String
+  categorie   String
+  capacite    Int
+  prix_nuit   Int
+  description String
+  disponible  Boolean @default(true)
+
+  hotel        Hotel         @relation(fields: [hotel_id], references: [hotel_id])
+  reservations Reservation[]
+
+  @@unique([hotel_id, numero])
+}
+
+model Reservation {
+  reservation_id   Int      @id @default(autoincrement())
+  voyageur_id      Int
+  chambre_id       Int
+  date_arrivee     DateTime @db.Date
+  date_depart      DateTime @db.Date
+  nb_personnes     Int
+  statut           String
+  demande_speciale String   @default("")
+
+  voyageur Utilisateur @relation(fields: [voyageur_id], references: [utilisateur_id])
+  chambre  Chambre     @relation(fields: [chambre_id], references: [chambre_id])
+}
