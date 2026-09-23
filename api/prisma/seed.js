@@ -1,21 +1,17 @@
 import "dotenv/config";
+import bcrypt from "bcrypt";
 import { readFileSync } from "node:fs";
-import { randomBytes, scrypt as scryptCallback } from "node:crypto";
 import path from "node:path";
-import { promisify } from "node:util";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 
 const prisma = new PrismaClient();
 const DATA_DIR = path.join(import.meta.dirname, "..", "finder-data");
-const scrypt = promisify(scryptCallback);
 
 const lire = (fichier) =>
   JSON.parse(readFileSync(path.join(DATA_DIR, fichier), "utf8"));
 
 const hasherMotDePasse = async (motDePasse) => {
-  const sel = randomBytes(16);
-  const derive = await scrypt(motDePasse, sel, 64);
-  return `scrypt:${sel.toString("hex")}:${derive.toString("hex")}`;
+  return bcrypt.hash(motDePasse, 10);
 };
 
 async function main() {
