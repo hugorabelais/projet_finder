@@ -4,6 +4,14 @@ import bcrypt from "bcrypt";
 import express from "express";
 import { PrismaClient } from "./generated/prisma/client.ts";
 import jwt from "jsonwebtoken";
+import {
+  schemaConnexion,
+  schemaDeconnexion,
+  schemaFiltresChambres,
+  schemaInscription,
+  schemaModifChambre,
+  schemaProfil,
+} from "./schemas.js";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -26,14 +34,34 @@ function authentifier(req, res, next) {
 
 function exigeRole(...roles) {
   return (req, res, next) =>
-    roles.includes(req.utilisateur.role)
+    roles.includes(req.user.role)
       ? next()
       : res.status(403).json({ erreur: "acces refuse" });
 }
 
-app.post("/auth/logout", authentifier, (_req, res) => res.status(204).end());
+function valider(schema) {
+  return (req, res, next) => {
+    const resultat = schema.safeParse(req.body ?? {});
+    if (!resultat.success) {
+      return res.status(400).json({
+        erreur: "donnees invalides",
+        details: resultat.error.issues,
+      });
+    }
 
-app.post("/auth/login", async (req, res) => {
+    req.body = resultat.data;
+    next();
+  };
+}
+
+app.post(
+  "/auth/logout",
+  authentifier,
+  valider(schemaDeconnexion),
+  (_req, res) => res.status(204).end(),
+);
+
+app.post("/auth/login", valider(schemaConnexion), async (req, res) => {
   const { email, mot_de_passe } = req.body;
   const utilisateur = await prisma.utilisateur.findUnique({ where: { email } });
   if (
@@ -57,7 +85,7 @@ app.post("/auth/login", async (req, res) => {
   res.json({ token });
 });
 
-app.post("/auth/register", async (req, res) => {
+app.post("/auth/register", valider(schemaInscription), async (req, res) => {
   const {
     role = "voyageur",
     email,
@@ -194,10 +222,16 @@ app.get("/hotels/:id", async (req, res) => {
 });
 
 app.get("/chambres", async (req, res) => {
+  const validationFiltres = schemaFiltresChambres.safeParse(req.query);
+  if (!validationFiltres.success) {
+    return res.status(400).json({
+      erreur: "donnees invalides",
+      details: validationFiltres.error.issues,
+    });
+  }
+
   const hotel_id = Number(req.query.hotel_id);
-  const capacite = Number(req.query.capacite);
-  const prix_max = Number(req.query.prix_max);
-  const { categorie } = req.query;
+  const { capacite, prix_max, categorie } = validationFiltres.data;
   const date_debut = req.query.date_debut;
   const date_fin = req.query.date_fin;
   const date_arrivee =
@@ -224,11 +258,9 @@ app.get("/chambres", async (req, res) => {
     const filtre = {};
 
     if (!Number.isNaN(hotel_id)) filtre.hotel_id = hotel_id;
-    if (!Number.isNaN(capacite)) filtre.capacite = { gte: capacite };
-    if (!Number.isNaN(prix_max)) filtre.prix_nuit = { lte: prix_max };
-    if (typeof categorie === "string" && categorie.length > 0) {
-      filtre.categorie = categorie;
-    }
+    if (capacite !== undefined) filtre.capacite = { gte: capacite };
+    if (prix_max !== undefined) filtre.prix_nuit = { lte: prix_max };
+    if (categorie !== undefined) filtre.categorie = categorie;
     if (date_arrivee && date_depart) {
       filtre.reservations = {
         none: {
@@ -253,6 +285,7 @@ app.patch(
   "/chambres/:id",
   authentifier,
   exigeRole("hotelier"),
+  valider(schemaModifChambre),
   async (req, res) => {
     const id = Number(req.params.id);
 
@@ -261,15 +294,16 @@ app.patch(
     }
 
     try {
-      const chambre = await prisma.chambre.findFirst({
-        where: {
-          chambre_id: id,
-          hotel_id: req.user.hotelId,
-        },
+      const chambre = await prisma.chambre.findUnique({
+        where: { chambre_id: id },
       });
 
       if (!chambre) {
         return res.status(404).json({ erreur: "chambre introuvable" });
+      }
+
+      if (chambre.hotel_id !== req.user.hotelId) {
+        return res.status(403).json({ erreur: "acces refuse" });
       }
 
       const chambreModifiee = await prisma.chambre.update({
@@ -298,12 +332,16 @@ app.delete(
     }
 
     try {
-      const chambre = await prisma.chambre.findFirst({
-        where: { chambre_id: chambreId, hotel_id: req.user.hotelId },
-        select: { chambre_id: true },
+      const chambre = await prisma.chambre.findUnique({
+        where: { chambre_id: chambreId },
+        select: { chambre_id: true, hotel_id: true },
       });
       if (!chambre) {
         return res.status(404).json({ erreur: "chambre introuvable" });
+      }
+
+      if (chambre.hotel_id !== req.user.hotelId) {
+        return res.status(403).json({ erreur: "acces refuse" });
       }
 
       await prisma.chambre.delete({ where: { chambre_id: chambreId } });
@@ -332,6 +370,7 @@ app.patch(
   "/voyageurs/me",
   authentifier,
   exigeRole("voyageur"),
+  valider(schemaProfil),
   async (req, res) => {
     const { nom, prenom, telephone } = req.body;
 
