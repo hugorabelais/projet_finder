@@ -673,7 +673,7 @@ app.get("/chambres/:id", async (req, res) => {
 app.get("/hotels", async (_req, res) => {
   try {
     const hotels = await prisma.hotel.findMany();
-    res.json(hotelS);
+    res.json(hotels);
   } catch (erreur) {
     console.error("Erreur lors de la récupération des hôtels :", erreur);
     res.status(500).json({ erreur: "erreur serveur" });
@@ -1028,11 +1028,16 @@ app.get(
   authentifier,
   exigeRole("voyageur"),
   async (req, res) => {
-    const moi = await prisma.utilisateur.findUnique({
-      where: { id: req.utilisateur.utilisateur_id },
-      select: { email: true, nom: true, telephone: true },
-    });
-    res.json(moi);
+    try {
+      const moi = await prisma.utilisateur.findUnique({
+        where: { utilisateur_id: req.user.userId },
+        select: { email: true, nom: true, telephone: true },
+      });
+      res.json(moi);
+    } catch (erreur) {
+      console.error("Erreur lors de la récupération du profil :", erreur);
+      res.status(500).json({ erreur: "erreur serveur" });
+    }
   },
 );
 
