@@ -8,6 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model Utilisateur {
   utilisateur_id   Int      @id @default(autoincrement())
   role             String

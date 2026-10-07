@@ -54,3 +54,23 @@ export const schemaFiltresChambres = z.object({
   capacite: schemaNombreQuery.pipe(z.number().int().min(1)).optional(),
   prix_max: schemaNombreQuery.pipe(z.number().min(0)).optional(),
 });
+
+export const schemaReservation = z
+  .object({
+    chambre_id: z.number().int().positive(),
+    date_arrivee: z.iso.date(),
+    date_depart: z.iso.date(),
+    nb_personnes: z.number().int().positive(),
+    demande_speciale: z.string().optional(),
+  })
+  .refine(
+    ({ date_arrivee, date_depart }) => date_arrivee < date_depart,
+    {
+      message: "date_arrivee doit être strictement avant date_depart",
+      path: ["date_depart"],
+    },
+  );
+
+export const schemaStatutReservation = z.object({
+  statut: z.enum(["confirmee", "refusee"]),
+});
