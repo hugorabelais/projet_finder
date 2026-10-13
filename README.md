@@ -12,4 +12,9 @@ node_modules/
 finder-data/ Q6 : le kit, copié tel quel
 hotels.json chambres.json comptes.json reservations.json README.md
 src/
-server.js Q5 : GET /health ; Q7 : GET /hotels, /hotels/:id, /chambres, /chambres/:id
+app.js crée et exporte l'application sans ouvrir de port ; tests Vitest/Supertest dans api/tests/
+server.js importe app.js et démarre le serveur pour npm run dev ou npm start
+
+Pour exécuter les dix tests de l'API depuis api/ :
+npx prisma db seed
+npm test

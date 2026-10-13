@@ -1,4 +1,4 @@
-// server.js (à la racine, à côté de package.json)
+// Application Express pour Finder.
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import express from "express";
@@ -8,6 +8,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import {
   schemaConnexion,
+  schemaChambre,
   schemaDeconnexion,
   schemaFiltresChambres,
   schemaInscription,
@@ -114,7 +115,6 @@ const spec = swaggerJsdoc({
   apis: ["./src/**/*.js"],
 });
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
-const PORT = process.env.PORT ?? 3000;
 
 /**
  * @openapi
@@ -875,6 +875,62 @@ app.get("/chambres", async (req, res) => {
 
 /**
  * @openapi
+ * /chambres:
+ *   post:
+ *     tags: [Chambres]
+ *     summary: Créer une chambre dans l'hôtel de l'hôtelier connecté
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [hotel_id, numero, categorie, capacite, prix_nuit]
+ *             properties:
+ *               hotel_id: { type: integer }
+ *               numero: { type: integer }
+ *               categorie: { type: string }
+ *               capacite: { type: integer }
+ *               prix_nuit: { type: number }
+ *               description: { type: string }
+ *               disponible: { type: boolean }
+ *     responses:
+ *       201:
+ *         description: Chambre créée
+ *       401:
+ *         description: Jeton absent ou invalide
+ *       403:
+ *         description: L'hôtelier ne peut créer que dans son hôtel
+ */
+app.post(
+  "/chambres",
+  authentifier,
+  exigeRole("hotelier"),
+  valider(schemaChambre),
+  async (req, res) => {
+    if (req.body.hotel_id !== req.user.hotelId) {
+      return res.status(403).json({ erreur: "acces refuse" });
+    }
+
+    try {
+      const chambre = await prisma.chambre.create({
+        data: {
+          ...req.body,
+          numero: String(req.body.numero),
+        },
+      });
+      res.status(201).json(chambre);
+    } catch (erreur) {
+      console.error("Erreur lors de la création de la chambre :", erreur);
+      res.status(500).json({ erreur: "erreur serveur" });
+    }
+  },
+);
+
+/**
+ * @openapi
  * /chambres/{id}:
  *   patch:
  *     tags: [Chambres]
@@ -1095,14 +1151,5 @@ app.patch(
   },
 );
 
-const serveur = app.listen(PORT, () => {
-  console.log(`API sur http://localhost:${PORT}`);
-});
-
-const fermerServeur = async () => {
-  serveur.close();
-  await prisma.$disconnect();
-};
-
-process.on("SIGINT", fermerServeur);
-process.on("SIGTERM", fermerServeur);
+export { prisma };
+export default app;
