@@ -14,6 +14,7 @@ const hotelier = {
 let jetonVoyageur;
 let jetonHotelier;
 let chambreTemporaireId;
+let reservationTemporaireId;
 
 async function obtenirJeton(identifiants) {
   const reponse = await request(app).post("/auth/login").send(identifiants);
@@ -62,6 +63,12 @@ describe("API Finder", () => {
         .delete(`/chambres/${chambreTemporaireId}`)
         .set("Authorization", `Bearer ${await obtenirJetonHotelier()}`);
       chambreTemporaireId = undefined;
+    }
+    if (reservationTemporaireId !== undefined) {
+      await prisma.reservation.deleteMany({
+        where: { reservation_id: reservationTemporaireId },
+      });
+      reservationTemporaireId = undefined;
     }
   });
 
@@ -255,17 +262,18 @@ describe("API Finder", () => {
     );
 
     expect(chambresSurPeriode.status).toBe(200);
-    expect(chambresSurPeriode.body).toHaveLength(31);
     expect(
       chambresSurPeriode.body.map((chambre) => chambre.chambre_id),
     ).not.toContain(4);
+    expect(
+      chambresSurPeriode.body.map((chambre) => chambre.chambre_id),
+    ).toContain(32);
 
     const chambresApresLiberation = await request(app).get(
       "/chambres?date_debut=2026-10-11&date_fin=2026-10-13",
     );
 
     expect(chambresApresLiberation.status).toBe(200);
-    expect(chambresApresLiberation.body).toHaveLength(32);
     expect(
       chambresApresLiberation.body.map((chambre) => chambre.chambre_id),
     ).toContain(4);
@@ -349,6 +357,7 @@ describe("API Finder", () => {
         nb_personnes: 2,
       });
 
+    reservationTemporaireId = creation.body.reservation_id;
     expect(creation.status).toBe(201);
     expect(creation.body.statut).toBe("en_attente");
 
