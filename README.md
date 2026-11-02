@@ -18,3 +18,10 @@ server.js importe app.js et démarre le serveur pour npm run dev ou npm start
 Pour exécuter les dix tests de l'API depuis api/ :
 npx prisma db seed
 npm test
+
+Pour démarrer le front depuis la racine de Finder :
+cd front
+npm install
+npm run dev
+
+Le front est accessible à l'adresse http://localhost:5173.

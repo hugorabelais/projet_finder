@@ -31,6 +31,15 @@ Règle : relue au début de chaque séance ; chaque amendement est daté dans le
 [ ] E7 Documentation Swagger de toutes les routes -> /docs les affiche toutes
 [ ] E8 Tests et recette -> npm test passe, TA-001 à TA-010
 
+## Sprint 2 - interface front
+
+[ ] E1 Structure React/Vite et navigation -> les pages principales Finder sont accessibles depuis le front
+[ ] E2 Catalogue des hôtels et chambres -> les résultats affichent les données reçues de l'API
+[ ] E3 Recherche et filtres de chambres -> une recherche affiche les chambres correspondant aux critères
+[ ] E4 Inscription et connexion -> un utilisateur peut créer son compte et se connecter avec un retour visible
+[ ] E5 Réservation -> un voyageur connecté peut envoyer une demande et voir son statut
+[ ] E6 Finition et vérification du front -> affichage utilisable sur mobile et `npm run build` réussit
+
 ## Gardes
 
 [~] Aucun secret dans le dépôt : .env est dans .gitignore
@@ -44,3 +53,4 @@ NON MESURABLE Temps de réponse de la recherche : pas de jeu de données assez g
 ## Journal
 
 20026-09-09 ... création v1, étape 1
+2026-11-02 sprint 2, étape 1 : déclaration des six étapes du front, toutes non franchies
