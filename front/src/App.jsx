@@ -1,201 +1,34 @@
-import { useState } from "react";
-import FicheChambre from "./composants/FicheChambre";
-import ListeChambres from "./composants/ListeChambres";
+import Recherche from "./pages/Recherche";
 import "./App.css";
 
-const hotel = {
-  nom: "Amor",
-  adresse: "14 quai des Pêcheurs",
-  codePostal: "17000",
-  ville: "La Rochelle",
-};
-
-const chambresInitiales = [
-  {
-    id: 1,
-    hotelId: 1,
-    numero: "101",
-    categorie: "simple",
-    capacite: 1,
-    prixNuit: 69,
-    description: "Lit simple, douche, bureau.",
-    disponible: true,
-  },
-  {
-    id: 2,
-    hotelId: 1,
-    numero: "102",
-    categorie: "simple",
-    capacite: 1,
-    prixNuit: 69,
-    description: "Lit simple, douche, bureau.",
-    disponible: true,
-  },
-  {
-    id: 3,
-    hotelId: 1,
-    numero: "103",
-    categorie: "simple",
-    capacite: 1,
-    prixNuit: 69,
-    description: "Lit simple, douche, bureau.",
-    disponible: true,
-  },
-  {
-    id: 4,
-    hotelId: 1,
-    numero: "104",
-    categorie: "double",
-    capacite: 2,
-    prixNuit: 95,
-    description: "Lit double, salle de bain, télévision.",
-    disponible: true,
-  },
-  {
-    id: 5,
-    hotelId: 1,
-    numero: "105",
-    categorie: "double",
-    capacite: 2,
-    prixNuit: 95,
-    description: "Lit double, salle de bain, télévision.",
-    disponible: true,
-  },
-  {
-    id: 6,
-    hotelId: 1,
-    numero: "206",
-    categorie: "double",
-    capacite: 2,
-    prixNuit: 95,
-    description: "Lit double, salle de bain, télévision.",
-    disponible: true,
-  },
-  {
-    id: 7,
-    hotelId: 1,
-    numero: "207",
-    categorie: "double",
-    capacite: 2,
-    prixNuit: 95,
-    description: "Lit double, salle de bain, télévision.",
-    disponible: true,
-  },
-  {
-    id: 8,
-    hotelId: 1,
-    numero: "208",
-    categorie: "double",
-    capacite: 2,
-    prixNuit: 95,
-    description: "Lit double, salle de bain, télévision.",
-    disponible: true,
-  },
-  {
-    id: 9,
-    hotelId: 1,
-    numero: "209",
-    categorie: "double",
-    capacite: 2,
-    prixNuit: 95,
-    description: "Lit double, salle de bain, télévision.",
-    disponible: true,
-  },
-  {
-    id: 10,
-    hotelId: 1,
-    numero: "210",
-    categorie: "familiale",
-    capacite: 4,
-    prixNuit: 149,
-    description: "Deux chambres communicantes, salle de bain, coin salon.",
-    disponible: true,
-  },
-  {
-    id: 11,
-    hotelId: 1,
-    numero: "211",
-    categorie: "familiale",
-    capacite: 4,
-    prixNuit: 149,
-    description: "Deux chambres communicantes, salle de bain, coin salon.",
-    disponible: true,
-  },
-  {
-    id: 12,
-    hotelId: 1,
-    numero: "212",
-    categorie: "suite",
-    capacite: 2,
-    prixNuit: 189,
-    description: "Grand lit, baignoire, salon séparé, vue dégagée.",
-    disponible: true,
-  },
-];
-
 export default function App() {
-  const [chambres] = useState(chambresInitiales);
-  const [chambreSelectionnee, setChambreSelectionnee] = useState(null);
-
   return (
     <div className="app-shell">
       <header className="site-header">
-        <div className="hotel-brand">
-          <span className="hotel-monogram" aria-hidden="true">
-            A
+        <div className="site-brand">
+          <span className="site-monogram" aria-hidden="true">
+            F
           </span>
           <span>
-            <strong>{hotel.nom}</strong>
-            <small>Maison de charme</small>
+            <strong>Finder</strong>
+            <small>Gestion multi-hôtels</small>
           </span>
-        </div>
-        <div className="hotel-location">
-          <span className="location-dot" aria-hidden="true" />
-          {hotel.ville}
         </div>
       </header>
 
       <section className="page-intro">
-        <p className="eyebrow">VOTRE SÉJOUR À LA ROCHELLE</p>
+        <p className="eyebrow">RECHERCHE MULTI-HÔTELS</p>
         <h1>
-          Trouvez la chambre
+          Trouvez votre chambre
           <br />
-          <span>qui vous ressemble.</span>
+          <span>idéale.</span>
         </h1>
         <p className="intro-copy">
-          Découvrez nos chambres et choisissez votre espace de détente.
+          Comparez les chambres selon vos dates et vos critères.
         </p>
       </section>
 
-      <main
-        className={`booking-layout${chambreSelectionnee ? " has-selection" : ""}`}
-      >
-        <section className="chambres-panel">
-          <header className="panel-heading">
-            <div>
-              <p className="eyebrow">FAITES VOTRE CHOIX</p>
-              <h2>Nos chambres</h2>
-            </div>
-            {chambres.length > 0 && (
-              <span className="room-count">
-                {chambres.length} {chambres.length === 1 ? "chambre" : "chambres"}
-              </span>
-            )}
-          </header>
-          <ListeChambres
-            chambres={chambres}
-            chambreSelectionnee={chambreSelectionnee}
-            onChoix={setChambreSelectionnee}
-          />
-        </section>
-        {chambreSelectionnee && (
-          <FicheChambre
-            chambre={chambreSelectionnee}
-            hotel={hotel}
-            onFermer={() => setChambreSelectionnee(null)}
-          />
-        )}
-      </main>
+      <Recherche />
 
       <footer className="page-footer">
         Les tarifs sont indiqués par nuit et par chambre.

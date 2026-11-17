@@ -1,4 +1,4 @@
-export default function FicheChambre({ hotel, chambre, onFermer }) {
+export default function FicheChambre({ chambre, onFermer }) {
   return (
     <article className="detail-panel" aria-live="polite">
       <div className="detail-cover">
@@ -27,20 +27,17 @@ export default function FicheChambre({ hotel, chambre, onFermer }) {
           </div>
           <div className="detail-fact">
             <span>Tarif par nuit</span>
-            <strong>{chambre.prixNuit} €</strong>
+            <strong>{chambre.prix_nuit} €</strong>
           </div>
         </div>
 
         <div className="hotel-card">
           <span className="hotel-card-icon" aria-hidden="true">
-            A
+            H
           </span>
           <span>
-            <small>Votre hôtel</small>
-            <strong>{hotel.nom}</strong>
-            <span>
-              {hotel.adresse}, {hotel.codePostal} {hotel.ville}
-            </span>
+            <small>Hôtel associé</small>
+            <strong>Hôtel n° {chambre.hotel_id}</strong>
           </span>
         </div>
 

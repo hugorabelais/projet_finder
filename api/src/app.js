@@ -10,8 +10,14 @@ import chambreRoutes from "./routes/chambres.js";
 import hotelRoutes from "./routes/hotels.js";
 import reservationRoutes from "./routes/reservations.js";
 import voyageurRoutes from "./routes/voyageurs.js";
+import cors from "cors";
 
 const app = express();
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+  }),
+);
 app.use(express.json());
 
 const spec = swaggerJsdoc({

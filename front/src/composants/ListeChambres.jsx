@@ -10,13 +10,17 @@ export default function ListeChambres({
   return (
     <ul className="room-list" aria-label="Liste des chambres">
       {chambres.map((chambre) => (
-        <li key={chambre.id}>
+        <li key={chambre.chambre_id}>
           <button
             type="button"
             className={`room-row${
-              chambreSelectionnee?.id === chambre.id ? " is-selected" : ""
+              chambreSelectionnee?.chambre_id === chambre.chambre_id
+                ? " is-selected"
+                : ""
             }`}
-            aria-pressed={chambreSelectionnee?.id === chambre.id}
+            aria-pressed={
+              chambreSelectionnee?.chambre_id === chambre.chambre_id
+            }
             onClick={() => onChoix(chambre)}
           >
             <span className="room-number">{chambre.numero}</span>
@@ -27,7 +31,7 @@ export default function ListeChambres({
               </small>
             </span>
             <span className="room-price">
-              <strong>{chambre.prixNuit} €</strong>
+              <strong>{chambre.prix_nuit} €</strong>
               <small>/ nuit</small>
             </span>
             <span className="room-arrow" aria-hidden="true">
