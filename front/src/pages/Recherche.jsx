@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { API } from "../config";
 import FicheChambre from "../composants/FicheChambre";
+import FicheHotel from "../composants/FicheHotel";
 import ListeChambres from "../composants/ListeChambres";
 
 const criteresInitiaux = {
@@ -25,6 +26,9 @@ export default function Recherche() {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
   const [apiIndisponible, setApiIndisponible] = useState(false);
+  const hotelSelectionne = hotels.find(
+    (hotel) => String(hotel.hotel_id) === criteres.hotel_id,
+  );
 
   useEffect(() => {
     let annule = false;
@@ -169,6 +173,8 @@ export default function Recherche() {
 
   return (
     <>
+      {hotelSelectionne && <FicheHotel hotel={hotelSelectionne} />}
+
       <section className="search-panel">
         <header className="panel-heading">
           <div>
