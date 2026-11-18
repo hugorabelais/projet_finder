@@ -301,7 +301,14 @@ describe("API Finder", () => {
     expect(reponse.status).toBe(200);
     expect(reponse.body).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ reservation_id: 1, voyageur_id: 4 }),
+        expect.objectContaining({
+          reservation_id: 1,
+          voyageur_id: 4,
+          chambre: expect.objectContaining({
+            numero: expect.any(String),
+            hotel: expect.objectContaining({ nom: expect.any(String) }),
+          }),
+        }),
       ]),
     );
   });

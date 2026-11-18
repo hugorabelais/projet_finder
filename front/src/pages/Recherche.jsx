@@ -13,6 +13,22 @@ const criteresInitiaux = {
   categorie: "",
 };
 
+function EnteteRecherche() {
+  return (
+    <section className="page-intro">
+      <p className="eyebrow">RECHERCHE MULTI-HÔTELS</p>
+      <h1>
+        Trouvez votre chambre
+        <br />
+        <span>idéale.</span>
+      </h1>
+      <p className="intro-copy">
+        Comparez les chambres selon vos dates et vos critères.
+      </p>
+    </section>
+  );
+}
+
 export default function Recherche() {
   const [criteres, setCriteres] = useState(criteresInitiaux);
   const [criteresValides, setCriteresValides] = useState({});
@@ -154,25 +170,32 @@ export default function Recherche() {
 
   if (apiIndisponible) {
     return (
-      <section className="api-unavailable" role="alert">
-        <span className="api-unavailable-icon" aria-hidden="true">
-          !
-        </span>
-        <p className="eyebrow">CONNEXION AU SERVICE</p>
-        <h2>API indisponible</h2>
-        <p>
-          La recherche ne peut pas accéder au service pour le moment. Vérifiez
-          que l’API est démarrée, puis réessayez.
-        </p>
-        <button className="search-submit" type="button" onClick={reessayer}>
-          Réessayer
-        </button>
-      </section>
+      <>
+        <EnteteRecherche />
+        <section className="api-unavailable" role="alert">
+          <span className="api-unavailable-icon" aria-hidden="true">
+            !
+          </span>
+          <p className="eyebrow">CONNEXION AU SERVICE</p>
+          <h2>API indisponible</h2>
+          <p>
+            La recherche ne peut pas accéder au service pour le moment. Vérifiez
+            que l’API est démarrée, puis réessayez.
+          </p>
+          <button className="search-submit" type="button" onClick={reessayer}>
+            Réessayer
+          </button>
+        </section>
+        <footer className="page-footer">
+          Les tarifs sont indiqués par nuit et par chambre.
+        </footer>
+      </>
     );
   }
 
   return (
     <>
+      <EnteteRecherche />
       {hotelSelectionne && <FicheHotel hotel={hotelSelectionne} />}
 
       <section className="search-panel">
@@ -321,6 +344,9 @@ export default function Recherche() {
           />
         )}
       </main>
+      <footer className="page-footer">
+        Les tarifs sont indiqués par nuit et par chambre.
+      </footer>
     </>
   );
 }

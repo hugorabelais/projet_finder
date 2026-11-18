@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function FicheChambre({ chambre, onFermer }) {
   return (
     <article className="detail-panel" aria-live="polite">
@@ -40,6 +42,13 @@ export default function FicheChambre({ chambre, onFermer }) {
             <strong>Hôtel n° {chambre.hotel_id}</strong>
           </span>
         </div>
+
+        <Link
+          className="search-submit detail-reserve"
+          to={`/reserver/${chambre.chambre_id}`}
+        >
+          Réserver cette chambre
+        </Link>
 
         <button type="button" className="detail-close" onClick={onFermer}>
           Fermer

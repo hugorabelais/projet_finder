@@ -85,7 +85,7 @@ router.post("/",
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Tableau des réservations avec leur chambre
+ *         description: Tableau des réservations avec leur chambre et hôtel
  *       401:
  *         description: Jeton absent ou invalide
  *       403:
@@ -100,7 +100,7 @@ router.get("/mine",
     try {
       const reservations = await prisma.reservation.findMany({
         where: { voyageur_id: req.user.userId },
-        include: { chambre: true },
+        include: { chambre: { include: { hotel: true } } },
       });
       res.json(reservations);
     } catch (erreur) {
